@@ -140,7 +140,7 @@ See [docs/research.md](docs/research.md) for the H17 ANE binary format findings 
 - **hollance** (2022): CoreML performance characterization, ANE tensor layout. [GitHub](https://github.com/hollance)
 - **eiln** (2023-2024): Linux ANE driver RE, IOKit mapping, H13/H14 analysis. [GitHub](https://github.com/eiln/ane)
 - **maderix** (2026): `_ANEClient` API enumeration, IOSurface format, direct ANE evaluation pipeline. [GitHub](https://github.com/maderix/ANE)
-- **Orion** (2026): `_ANEInMemoryModel` MIL compilation, espresso.net mode patching.
+- **Orion** (2026): `_ANEInMemoryModel` MIL compilation, espresso.net mode patching. [arXiv](https://arxiv.org/abs/2603.06728)
 
 The conv pipeline activation byte (0x4176), tile-replicated PWL format, 48K word map, mode sweep, and the `torch.where` → ANE PWL deployment path are original contributions, discovered through binary-level reverse engineering on M5 Pro, macOS 26.4.
 
