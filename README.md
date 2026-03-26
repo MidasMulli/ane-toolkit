@@ -107,7 +107,7 @@ More segments = lower error but more `torch.where` ops in the MIL graph:
 
 3. **CoreML Conversion**: `coremltools.convert()` maps `torch.where` to MIL `select` ops.
 
-4. **ANE Compilation**: The CoreML compiler recognizes the piecewise-linear structure and compiles it to hardware PWL lookup tables in the ANE's conv pipeline output stage — the same mechanism used for built-in activations like sigmoid and tanh.
+4. **ANE Execution**: The CoreML compiler compiles the MIL select ops to efficient ANE execution. In our testing, the output matches the PWL approximation at FP16 precision, consistent with hardware PWL evaluation.
 
 ## Limitations
 
@@ -131,18 +131,22 @@ Key findings:
 - Conv + activation fuse into a single hardware dispatch at zero additional cost
 - The `torch.where` → MIL `select` → ANE PWL path works without SIP or binary patching
 
-See [docs/binary_format.md](docs/binary_format.md) for the full H17 ANE binary format specification. See [docs/methodology.md](docs/methodology.md) for the reverse engineering methodology.
+See [docs/research.md](docs/research.md) for the H17 ANE binary format findings and [docs/pwl_formats.md](docs/pwl_formats.md) for the observed PWL format variations.
 
 ## Prior Art
 
 - **geohot** (2020): First public HWX format analysis, BEEFFACE magic identification. [tinygrad](https://github.com/tinygrad/tinygrad)
-- **freedomtan** (2021): `coreml_to_ane_hwx` binary extraction tools. [GitHub](https://github.com/nicklolsen/coreml_to_ane_hwx)
+- **freedomtan** (2021): `coreml_to_ane_hwx` binary extraction tools. [GitHub](https://github.com/freedomtan/coreml_to_ane_hwx)
 - **hollance** (2022): CoreML performance characterization, ANE tensor layout. [GitHub](https://github.com/hollance)
 - **eiln** (2023-2024): Linux ANE driver RE, IOKit mapping, H13/H14 analysis. [GitHub](https://github.com/eiln/ane)
-- **maderix** (2025): `_ANEClient` API, IOSurface format, direct evaluation. [GitHub](https://github.com/maderix/apple-ane-exploration)
-- **Orion** (2025-2026): `_ANEInMemoryModel` MIL compilation, espresso.net mode patching.
+- **maderix** (2026): `_ANEClient` API enumeration, IOSurface format, direct ANE evaluation pipeline. [GitHub](https://github.com/maderix/ANE)
+- **Orion** (2026): `_ANEInMemoryModel` MIL compilation, espresso.net mode patching.
 
-The conv pipeline activation byte (0x4176), tile-replicated PWL format, 48K word map, mode sweep, and the `torch.where` → ANE PWL deployment path are original contributions.
+The conv pipeline activation byte (0x4176), tile-replicated PWL format, 48K word map, mode sweep, and the `torch.where` → ANE PWL deployment path are original contributions, discovered through binary-level reverse engineering on M5 Pro, macOS 26.4.
+
+## Built With
+
+Research and implementation by Nick L. with [Claude Code](https://claude.ai/code) (Claude Opus 4.6). The binary format reverse engineering, operation atlas, mutation testing, and toolkit development were collaborative — human direction and domain expertise, AI execution and code generation.
 
 ## License
 
